@@ -1,0 +1,40 @@
+{
+  "users": {
+    "inkosssator": {
+      "id": "8450993629",
+      "username": "inkosssator",
+      "first_name": "Cash Collector",
+      "last_name": ""
+    }
+  },
+  "codes": {},
+  "tokens": {},
+  "wallets": {},
+  "buyOffers": [],
+  "sellOffers": [
+    {
+      "id": "sell-demo-1",
+      "method": "SBP",
+      "rateMode": "ABS",
+      "rate": "95.50",
+      "minCheckRub": 1000,
+      "avgTimeMin": 5,
+      "status": "NEW",
+      "frozen": false,
+      "createdAt": "2024-01-01T00:00:00"
+    },
+    {
+      "id": "sell-demo-2",
+      "method": "CARD",
+      "rateMode": "PERCENT",
+      "ratePercent": 2,
+      "minCheckRub": 5000,
+      "avgTimeMin": 10,
+      "status": "NEW",
+      "frozen": false,
+      "createdAt": "2024-01-01T00:00:00"
+    }
+  ],
+  "deals": [],
+  "referrals": {}
+}

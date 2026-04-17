@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://franklinex.org/sitemap.xml

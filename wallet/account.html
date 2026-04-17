@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Настройки профиля | FranklinEx</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #0f172a; color: #e2e8f0; margin: 0; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .logo { font-size: 24px; font-weight: bold; color: #3b82f6; }
+        .back-btn { background: #1e293b; color: #fff; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; text-decoration: none; }
+        .card { background: #1e293b; border-radius: 12px; padding: 25px; margin-bottom: 20px; }
+        .card h2 { margin-top: 0; color: #f1f5f9; font-size: 20px; border-bottom: 1px solid #334155; padding-bottom: 15px; margin-bottom: 20px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; color: #94a3b8; font-size: 14px; }
+        .form-control { width: 100%; padding: 12px; background: #0f172a; border: 1px solid #334155; border-radius: 8px; color: #e2e8f0; font-size: 16px; box-sizing: border-box; }
+        .form-control:focus { outline: none; border-color: #3b82f6; }
+        .btn { background: #3b82f6; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: 600; width: 100%; transition: background 0.3s; }
+        .btn:hover { background: #2563eb; }
+        .btn-secondary { background: #334155; }
+        .btn-secondary:hover { background: #475569; }
+        .btn-danger { background: #ef4444; margin-top: 10px; }
+        .btn-danger:hover { background: #dc2626; }
+        .user-info { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
+        .avatar { width: 60px; height: 60px; background: #3b82f6; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold; color: white; }
+        .user-details h3 { margin: 0; color: #f1f5f9; }
+        .user-details p { margin: 5px 0 0; color: #94a3b8; font-size: 14px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-top: 20px; }
+        .stat-item { background: #0f172a; padding: 15px; border-radius: 8px; text-align: center; }
+        .stat-value { font-size: 24px; font-weight: bold; color: #3b82f6; }
+        .stat-label { font-size: 13px; color: #94a3b8; margin-top: 5px; }
+        .notification { padding: 12px; border-radius: 8px; margin-bottom: 15px; display: none; }
+        .notification.success { background: rgba(16, 185, 129, 0.1); border: 1px solid #10b981; color: #10b981; }
+        .notification.error { background: rgba(239, 68, 68, 0.1); border: 1px solid #ef4444; color: #ef4444; }
+        .toggle-row { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid #334155; }
+        .toggle-row:last-child { border-bottom: none; }
+        .switch { position: relative; display: inline-block; width: 50px; height: 26px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #334155; transition: .4s; border-radius: 26px; }
+        .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: #3b82f6; }
+        input:checked + .slider:before { transform: translateX(24px); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">FranklinEx</div>
+            <a href="../wallet/qr.html" class="back-btn">← Назад</a>
+        </div>
+
+        <h1 style="margin-bottom: 20px;">Настройки профиля</h1>
+
+        <div id="notification" class="notification"></div>
+
+        <!-- Информация о пользователе -->
+        <div class="card">
+            <h2>Профиль</h2>
+            <div class="user-info">
+                <div class="avatar" id="user-avatar">U</div>
+                <div class="user-details">
+                    <h3 id="user-name">Загрузка...</h3>
+                    <p id="user-phone">Загрузка...</p>
+                </div>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-value" id="total-deals">0</div>
+                    <div class="stat-label">Всего сделок</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="success-rate">0%</div>
+                    <div class="stat-label">Успешных</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="reputation">0</div>
+                    <div class="stat-label">Репутация</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Настройки безопасности -->
+        <div class="card">
+            <h2>Безопасность</h2>
+            <div class="form-group">
+                <label>Telegram для уведомлений</label>
+                <input type="text" class="form-control" id="telegram-username" placeholder="@username">
+            </div>
+            <button class="btn" onclick="saveSettings()">Сохранить изменения</button>
+        </div>
+
+        <!-- Уведомления -->
+        <div class="card">
+            <h2>Уведомления</h2>
+            <div class="toggle-row">
+                <span>Уведомления о сделках</span>
+                <label class="switch">
+                    <input type="checkbox" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="toggle-row">
+                <span>Уведомления о курсах</span>
+                <label class="switch">
+                    <input type="checkbox">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="toggle-row">
+                <span>Маркетинговые рассылки</span>
+                <label class="switch">
+                    <input type="checkbox">
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+
+        <!-- Опасная зона -->
+        <div class="card">
+            <h2 style="color: #ef4444;">Опасная зона</h2>
+            <p style="color: #94a3b8; font-size: 14px; margin-bottom: 15px;">
+                После выхода из аккаунта вам потребуется снова ввести код из Telegram для входа.
+            </p>
+            <button class="btn btn-secondary" onclick="logout()">Выйти из аккаунта</button>
+            <button class="btn btn-danger" onclick="deleteAccount()">Удалить аккаунт</button>
+        </div>
+    </div>
+
+    <script>
+        const WORKER_BASE = localStorage.getItem("worker_base") || "http://localhost:3000";
+        const token = localStorage.getItem("FE_USER_TOKEN");
+
+        if (!token) {
+            window.location.href = '../auth/auth.html';
+        }
+
+        // Загрузка данных профиля
+        async function loadProfile() {
+            try {
+                const response = await fetch(`${WORKER_BASE}/api/public/auth/me`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (response.ok) {
+                    const user = await response.json();
+                    document.getElementById('user-name').textContent = user.username || 'Пользователь';
+                    document.getElementById('user-phone').textContent = user.phone || 'Не указан';
+                    document.getElementById('user-avatar').textContent = (user.username || 'U')[0].toUpperCase();
+                    
+                    // Статистика (mock данные пока)
+                    document.getElementById('total-deals').textContent = user.totalDeals || 0;
+                    document.getElementById('success-rate').textContent = (user.successRate || 100) + '%';
+                    document.getElementById('reputation').textContent = user.reputation || 0;
+                    
+                    document.getElementById('telegram-username').value = user.telegramUsername || '';
+                } else {
+                    showNotification('Ошибка загрузки профиля', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showNotification('Ошибка подключения к серверу', 'error');
+            }
+        }
+
+        // Сохранение настроек
+        async function saveSettings() {
+            const telegramUsername = document.getElementById('telegram-username').value;
+            
+            try {
+                const response = await fetch(`${WORKER_BASE}/api/public/settings/update`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ telegramUsername })
+                });
+
+                if (response.ok) {
+                    showNotification('Настройки успешно сохранены', 'success');
+                } else {
+                    showNotification('Ошибка при сохранении', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showNotification('Ошибка подключения к серверу', 'error');
+            }
+        }
+
+        // Выход
+        function logout() {
+            if (confirm('Вы уверены, что хотите выйти?')) {
+                localStorage.removeItem('FE_USER_TOKEN');
+                window.location.href = '../auth/auth.html';
+            }
+        }
+
+        // Удаление аккаунта
+        function deleteAccount() {
+            if (confirm('ВНИМАНИЕ: Это действие необратимо! Все ваши данные будут удалены. Продолжить?')) {
+                if (confirm('Вы действительно уверены? Это нельзя отменить.')) {
+                    // Здесь должен быть API вызов для удаления
+                    alert('Функция удаления аккаунта будет доступна в следующей версии');
+                }
+            }
+        }
+
+        function showNotification(message, type) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.style.display = 'block';
+            
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        }
+
+        loadProfile();
+    </script>
+</body>
+</html>

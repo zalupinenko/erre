@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>История операций | FranklinEx</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #0f172a; color: #e2e8f0; margin: 0; padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .logo { font-size: 24px; font-weight: bold; color: #3b82f6; }
+        .back-btn { background: #1e293b; color: #fff; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; text-decoration: none; }
+        .filters { display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap; }
+        .filter-btn { background: #1e293b; color: #cbd5e1; border: 1px solid #334155; padding: 8px 16px; border-radius: 6px; cursor: pointer; transition: all 0.3s; }
+        .filter-btn.active { background: #3b82f6; color: white; border-color: #3b82f6; }
+        .transactions-table { width: 100%; border-collapse: collapse; background: #1e293b; border-radius: 12px; overflow: hidden; }
+        .transactions-table th, .transactions-table td { padding: 15px; text-align: left; border-bottom: 1px solid #334155; }
+        .transactions-table th { background: #0f172a; color: #94a3b8; font-weight: 600; font-size: 14px; }
+        .transactions-table tr:hover { background: #334155; }
+        .type-buy { color: #10b981; font-weight: 600; }
+        .type-sell { color: #ef4444; font-weight: 600; }
+        .type-deposit { color: #3b82f6; font-weight: 600; }
+        .type-withdraw { color: #f59e0b; font-weight: 600; }
+        .status-success { color: #10b981; }
+        .status-pending { color: #f59e0b; }
+        .status-failed { color: #ef4444; }
+        .empty-state { text-align: center; padding: 60px 20px; color: #64748b; }
+        @media (max-width: 768px) {
+            .transactions-table { font-size: 14px; }
+            .transactions-table th, .transactions-table td { padding: 10px 8px; }
+            .hide-mobile { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">FranklinEx</div>
+            <a href="../wallet/qr.html" class="back-btn">← Назад</a>
+        </div>
+
+        <h1 style="margin-bottom: 20px;">История операций</h1>
+
+        <div class="filters">
+            <button class="filter-btn active" data-type="all">Все</button>
+            <button class="filter-btn" data-type="buy">Покупки</button>
+            <button class="filter-btn" data-type="sell">Продажи</button>
+            <button class="filter-btn" data-type="deposit">Пополнения</button>
+            <button class="filter-btn" data-type="withdraw">Выводы</button>
+        </div>
+
+        <table class="transactions-table">
+            <thead>
+                <tr>
+                    <th>Дата</th>
+                    <th>Тип</th>
+                    <th>Сумма</th>
+                    <th class="hide-mobile">Статус</th>
+                    <th class="hide-mobile">Детали</th>
+                </tr>
+            </thead>
+            <tbody id="transactions-list">
+                <!-- Заполняется через JS -->
+            </tbody>
+        </table>
+
+        <div id="empty-state" class="empty-state" style="display: none;">
+            <p>Операций пока нет</p>
+        </div>
+    </div>
+
+    <script>
+        const WORKER_BASE = localStorage.getItem("worker_base") || "http://localhost:3000";
+        const token = localStorage.getItem("FE_USER_TOKEN");
+
+        // Проверка авторизации
+        if (!token) {
+            window.location.href = '../auth/auth.html';
+        }
+
+        let allTransactions = [];
+        let currentFilter = 'all';
+
+        // Загрузка истории
+        async function loadTransactions() {
+            try {
+                const response = await fetch(`${WORKER_BASE}/api/public/wallet/history`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    allTransactions = data.transactions || [];
+                    renderTransactions();
+                } else {
+                    showError('Не удалось загрузить историю');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showError('Ошибка подключения к серверу');
+            }
+        }
+
+        // Отображение транзакций
+        function renderTransactions() {
+            const tbody = document.getElementById('transactions-list');
+            const emptyState = document.getElementById('empty-state');
+            
+            let filtered = allTransactions;
+            if (currentFilter !== 'all') {
+                filtered = allTransactions.filter(t => t.type === currentFilter);
+            }
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = '';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            emptyState.style.display = 'none';
+            tbody.innerHTML = filtered.map(t => `
+                <tr>
+                    <td>${new Date(t.date).toLocaleDateString('ru-RU')} <small style="color:#64748b">${new Date(t.date).toLocaleTimeString('ru-RU', {hour: '2-digit', minute:'2-digit'})}</small></td>
+                    <td><span class="type-${t.type}">${getTypeName(t.type)}</span></td>
+                    <td><strong>${t.amount}</strong> ${t.currency}</td>
+                    <td class="hide-mobile"><span class="status-${t.status}">${getStatusName(t.status)}</span></td>
+                    <td class="hide-mobile"><small>${t.description || '-'}</small></td>
+                </tr>
+            `).join('');
+        }
+
+        function getTypeName(type) {
+            const names = {
+                'buy': 'Покупка USDT',
+                'sell': 'Продажа USDT',
+                'deposit': 'Пополнение',
+                'withdraw': 'Вывод средств'
+            };
+            return names[type] || type;
+        }
+
+        function getStatusName(status) {
+            const names = {
+                'success': 'Успешно',
+                'pending': 'В обработке',
+                'failed': 'Отклонено'
+            };
+            return names[status] || status;
+        }
+
+        function showError(message) {
+            document.getElementById('empty-state').innerHTML = `<p>${message}</p>`;
+            document.getElementById('empty-state').style.display = 'block';
+            document.querySelector('.transactions-table').style.display = 'none';
+        }
+
+        // Фильтры
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentFilter = btn.dataset.type;
+                renderTransactions();
+            });
+        });
+
+        // Инициализация
+        loadTransactions();
+    </script>
+</body>
+</html>

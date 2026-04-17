@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Кошелёк | FranklinEx</title>
+  <style>
+    :root {
+      --bg-dark: #0f1115;
+      --bg-card: #1a1d24;
+      --bg-hover: #232730;
+      --primary: #00dc82;
+      --primary-hover: #00b368;
+      --text-main: #ffffff;
+      --text-secondary: #9ca3af;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --border: #2d3139;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header */
+    .header {
+      background-color: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary);
+      text-decoration: none;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .user-balance {
+      font-weight: 600;
+      color: var(--primary);
+    }
+
+    .logout-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .logout-btn:hover {
+      border-color: var(--danger);
+      color: var(--danger);
+    }
+
+    /* Main Content */
+    .main-container {
+      flex: 1;
+      padding: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .balance-card {
+      background: linear-gradient(135deg, var(--bg-card) 0%, #1e222b 100%);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+
+    .balance-title {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .balance-amount {
+      font-size: 3rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 1rem;
+    }
+
+    .balance-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-primary {
+      background-color: var(--primary);
+      color: #000;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--primary-hover);
+    }
+
+    .btn-secondary {
+      background-color: var(--bg-hover);
+      color: var(--text-main);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      background-color: var(--border);
+    }
+
+    /* Quick Actions Grid */
+    .actions-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+
+    .action-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      text-align: center;
+      transition: all 0.2s;
+      cursor: pointer;
+      text-decoration: none;
+      color: var(--text-main);
+    }
+
+    .action-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--primary);
+      background-color: var(--bg-hover);
+    }
+
+    .action-icon {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .action-title {
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .action-desc {
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+    }
+
+    /* Loading State */
+    .loading {
+      opacity: 0.5;
+      pointer-events: none;
+    }
+
+    /* Error Message */
+    .error-message {
+      background-color: rgba(239, 68, 68, 0.1);
+      border: 1px solid var(--danger);
+      color: var(--danger);
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      display: none;
+    }
+
+    @media (max-width: 768px) {
+      .header {
+        padding: 1rem;
+      }
+
+      .main-container {
+        padding: 1rem;
+      }
+
+      .balance-amount {
+        font-size: 2rem;
+      }
+
+      .balance-actions {
+        flex-direction: column;
+      }
+
+      .btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <a href="./qr.html" class="logo">FranklinEx</a>
+    <div class="user-info">
+      <span class="user-balance" id="headerBalance">Загрузка...</span>
+      <button class="logout-btn" onclick="logout()">Выйти</button>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-container">
+    <div class="error-message" id="errorMessage"></div>
+
+    <!-- Balance Card -->
+    <div class="balance-card">
+      <div class="balance-title">Общий баланс</div>
+      <div class="balance-amount" id="totalBalance">$0.00</div>
+      <div class="balance-actions">
+        <a href="../buy/buy.html" class="btn btn-primary">
+          <span>💳</span> Купить USDT
+        </a>
+        <a href="../sell/sell.html" class="btn btn-secondary">
+          <span>💰 Продать USDT</span>
+        </a>
+        <a href="./topup.html" class="btn btn-secondary">
+          <span>⬆️ Пополнить</span>
+        </a>
+        <a href="./withdraw.html" class="btn btn-secondary">
+          <span>⬇️ Вывести</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="actions-grid">
+      <a href="./trade.html" class="action-card">
+        <div class="action-icon">📊</div>
+        <div class="action-title">P2P Торговля</div>
+        <div class="action-desc">Создать ордер на покупку или продажу</div>
+      </a>
+
+      <a href="./history.html" class="action-card">
+        <div class="action-icon">📜</div>
+        <div class="action-title">История</div>
+        <div class="action-desc">Все ваши транзакции и сделки</div>
+      </a>
+
+      <a href="./account.html" class="action-card">
+        <div class="action-icon">⚙️</div>
+        <div class="action-title">Настройки</div>
+        <div class="action-desc">Управление профилем и безопасностью</div>
+      </a>
+
+      <a href="./bonuses.html" class="action-card">
+        <div class="action-icon">🎁</div>
+        <div class="action-title">Бонусы</div>
+        <div class="action-desc">Реферальная программа и промокоды</div>
+      </a>
+    </div>
+  </main>
+
+  <script>
+    const WORKER_BASE = localStorage.getItem("worker_base") || "http://localhost:3000";
+    
+    // Проверка авторизации
+    function checkAuth() {
+      const token = localStorage.getItem("FE_USER_TOKEN");
+      if (!token) {
+        window.location.href = "../auth/auth.html";
+        return null;
+      }
+      return token;
+    }
+
+    // Загрузка данных пользователя
+    async function loadUserData() {
+      const token = checkAuth();
+      if (!token) return;
+
+      try {
+        const response = await fetch(`${WORKER_BASE}/api/public/auth/me`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (response.status === 401) {
+          localStorage.removeItem("FE_USER_TOKEN");
+          window.location.href = "../auth/auth.html";
+          return;
+        }
+
+        if (!response.ok) {
+          throw new Error('Ошибка загрузки данных');
+        }
+
+        const data = await response.json();
+        updateUserInterface(data);
+      } catch (error) {
+        showError('Ошибка подключения к серверу');
+        console.error(error);
+      }
+    }
+
+    // Загрузка баланса
+    async function loadBalance() {
+      const token = checkAuth();
+      if (!token) return;
+
+      try {
+        const response = await fetch(`${WORKER_BASE}/api/public/wallet/balance`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          updateBalanceDisplay(data);
+        }
+      } catch (error) {
+        console.error('Ошибка загрузки баланса:', error);
+      }
+    }
+
+    // Обновление интерфейса
+    function updateUserInterface(user) {
+      document.getElementById('headerBalance').textContent = 
+        `${user.username || user.telegram_username || 'Пользователь'}`;
+    }
+
+    // Обновление отображения баланса
+    function updateBalanceDisplay(balanceData) {
+      const total = (balanceData.usdt || 0) + (balanceData.rub || 0) / 100; // Примерный пересчет
+      document.getElementById('totalBalance').textContent = `$${total.toFixed(2)}`;
+      
+      // Обновляем заголовок
+      const headerBalance = document.getElementById('headerBalance');
+      if (!headerBalance.textContent.includes('$')) {
+        headerBalance.textContent += ` | $${balanceData.usdt?.toFixed(2) || '0.00'}`;
+      }
+    }
+
+    // Показать ошибку
+    function showError(message) {
+      const errorEl = document.getElementById('errorMessage');
+      errorEl.textContent = message;
+      errorEl.style.display = 'block';
+      
+      setTimeout(() => {
+        errorEl.style.display = 'none';
+      }, 5000);
+    }
+
+    // Выход
+    function logout() {
+      localStorage.removeItem("FE_USER_TOKEN");
+      localStorage.removeItem("FE_USER_DATA");
+      window.location.href = "../auth/auth.html";
+    }
+
+    // Инициализация
+    document.addEventListener('DOMContentLoaded', () => {
+      loadUserData();
+      loadBalance();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Продать USDT | FranklinEx</title>
+  <style>
+    :root {
+      --bg-dark: #0f1115;
+      --bg-card: #1a1d24;
+      --bg-hover: #232730;
+      --primary: #00dc82;
+      --primary-hover: #00b368;
+      --text-main: #ffffff;
+      --text-secondary: #9ca3af;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --border: #2d3139;
+      --success: #10b981;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header */
+    .header {
+      background-color: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary);
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1.5rem;
+    }
+
+    .nav-link {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .nav-link:hover, .nav-link.active {
+      color: var(--primary);
+    }
+
+    /* Main Content */
+    .main-container {
+      flex: 1;
+      padding: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .page-title {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin-bottom: 2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    /* Offers Table */
+    .offers-container {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 2rem;
+    }
+
+    .offers-header {
+      padding: 1.5rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .offers-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+
+    .create-offer-btn {
+      background-color: var(--primary);
+      color: #000;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .create-offer-btn:hover {
+      background-color: var(--primary-hover);
+    }
+
+    .offers-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .offers-table th {
+      background-color: var(--bg-hover);
+      padding: 1rem 1.5rem;
+      text-align: left;
+      font-weight: 600;
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      text-transform: uppercase;
+    }
+
+    .offers-table td {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .offers-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .offers-table tr:hover {
+      background-color: var(--bg-hover);
+    }
+
+    .price-sell {
+      color: var(--danger);
+      font-weight: 600;
+    }
+
+    .amount {
+      font-weight: 500;
+    }
+
+    .payment-method {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.35rem 0.75rem;
+      background-color: var(--bg-hover);
+      border-radius: 6px;
+      font-size: 0.85rem;
+    }
+
+    .trade-btn {
+      background-color: var(--danger);
+      color: #fff;
+      border: none;
+      padding: 0.5rem 1.25rem;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .trade-btn:hover {
+      background-color: #dc2626;
+      transform: translateY(-1px);
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 4rem 2rem;
+      color: var(--text-secondary);
+    }
+
+    .empty-icon {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+      opacity: 0.5;
+    }
+
+    .empty-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: var(--text-main);
+    }
+
+    /* Filter Section */
+    .filters {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .filter-input {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      min-width: 200px;
+    }
+
+    .filter-input:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    .filter-select {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+
+    @media (max-width: 768px) {
+      .header {
+        padding: 1rem;
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      .main-container {
+        padding: 1rem;
+      }
+
+      .offers-table {
+        font-size: 0.85rem;
+      }
+
+      .offers-table th,
+      .offers-table td {
+        padding: 0.75rem 0.5rem;
+      }
+
+      .filters {
+        flex-direction: column;
+      }
+
+      .filter-input,
+      .filter-select {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <a href="../wallet/qr.html" class="logo">FranklinEx</a>
+    <nav class="nav-links">
+      <a href="../buy/buy.html" class="nav-link">Купить</a>
+      <a href="./sell.html" class="nav-link active">Продать</a>
+      <a href="../wallet/qr.html" class="nav-link">Кошелёк</a>
+    </nav>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-container">
+    <h1 class="page-title">
+      <span>💰</span> Продать USDT
+    </h1>
+
+    <!-- Filters -->
+    <div class="filters">
+      <input type="number" class="filter-input" id="amountFilter" placeholder="Сумма от (RUB)" />
+      <select class="filter-select" id="paymentFilter">
+        <option value="">Все способы оплаты</option>
+        <option value="tinkoff">Tinkoff</option>
+        <option value="sberbank">Sberbank</option>
+        <option value="raiffeisen">Raiffeisen</option>
+        <option value="qiwi">Qiwi</option>
+      </select>
+    </div>
+
+    <!-- Offers List -->
+    <div class="offers-container">
+      <div class="offers-header">
+        <h2 class="offers-title">Доступные предложения</h2>
+        <button class="create-offer-btn" onclick="createOffer()">+ Создать ордер</button>
+      </div>
+
+      <table class="offers-table">
+        <thead>
+          <tr>
+            <th>Покупатель</th>
+            <th>Цена (RUB)</th>
+            <th>Лимиты</th>
+            <th>Сумма в наличии</th>
+            <th>Оплата</th>
+            <th>Действие</th>
+          </tr>
+        </thead>
+        <tbody id="offersBody">
+          <!-- Offers will be loaded here -->
+        </tbody>
+      </table>
+
+      <div class="empty-state" id="emptyState" style="display: none;">
+        <div class="empty-icon">📭</div>
+        <div class="empty-title">Нет доступных предложений</div>
+        <p>Попробуйте изменить фильтры или создайте свой ордер</p>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const WORKER_BASE = localStorage.getItem("worker_base") || "http://localhost:3000";
+
+    // Проверка авторизации
+    function checkAuth() {
+      const token = localStorage.getItem("FE_USER_TOKEN");
+      if (!token) {
+        window.location.href = "../auth/auth.html";
+        return null;
+      }
+      return token;
+    }
+
+    // Загрузка предложений на продажу
+    async function loadSellOffers() {
+      const token = checkAuth();
+      if (!token) return;
+
+      try {
+        const response = await fetch(`${WORKER_BASE}/api/public/sell_offers`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (response.ok) {
+          const offers = await response.json();
+          renderOffers(offers);
+        } else {
+          console.error('Ошибка загрузки предложений');
+        }
+      } catch (error) {
+        console.error('Ошибка подключения:', error);
+      }
+    }
+
+    // Отображение предложений
+    function renderOffers(offers) {
+      const tbody = document.getElementById('offersBody');
+      const emptyState = document.getElementById('emptyState');
+
+      if (!offers || offers.length === 0) {
+        tbody.innerHTML = '';
+        emptyState.style.display = 'block';
+        return;
+      }
+
+      emptyState.style.display = 'none';
+      
+      tbody.innerHTML = offers.map(offer => `
+        <tr>
+          <td>
+            <div style="font-weight: 600;">${offer.trader_name || 'Покупатель'}</div>
+            <div style="font-size: 0.75rem; color: var(--text-secondary);">
+              ${offer.completed_trades || 0} сделок • ${offer.success_rate || 100}%
+            </div>
+          </td>
+          <td class="price-sell">${offer.price.toFixed(2)} ₽</td>
+          <td>
+            ${offer.min_amount?.toLocaleString()} - ${offer.max_amount?.toLocaleString()} ₽
+          </td>
+          <td class="amount">${offer.available_amount?.toFixed(2) || '0.00'} USDT</td>
+          <td>
+            <span class="payment-method">
+              ${getPaymentIcon(offer.payment_method)} ${offer.payment_method || 'Банк'}
+            </span>
+          </td>
+          <td>
+            <button class="trade-btn" onclick="reserveOffer('${offer.id}')">
+              Продать
+            </button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    // Иконки платежных методов
+    function getPaymentIcon(method) {
+      const icons = {
+        tinkoff: '🟡',
+        sberbank: '🟢',
+        raiffeisen: '🔴',
+        qiwi: '🟠'
+      };
+      return icons[method?.toLowerCase()] || '🏦';
+    }
+
+    // Бронирование ордера
+    async function reserveOffer(offerId) {
+      const token = checkAuth();
+      if (!token) return;
+
+      const amount = prompt('Введите сумму продажи в RUB:');
+      if (!amount || isNaN(amount)) return;
+
+      try {
+        const response = await fetch(`${WORKER_BASE}/api/public/reserve_offer`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            offer_id: offerId,
+            amount: parseFloat(amount)
+          })
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          window.location.href = `sell-deal.html?deal_id=${data.deal_id}`;
+        } else {
+          const error = await response.json();
+          alert(error.message || 'Ошибка бронирования');
+        }
+      } catch (error) {
+        alert('Ошибка подключения к серверу');
+      }
+    }
+
+    // Создание ордера
+    function createOffer() {
+      window.location.href = 'sell-create.html';
+    }
+
+    // Фильтрация
+    document.getElementById('amountFilter')?.addEventListener('input', filterOffers);
+    document.getElementById('paymentFilter')?.addEventListener('change', filterOffers);
+
+    function filterOffers() {
+      loadSellOffers();
+    }
+
+    // Инициализация
+    document.addEventListener('DOMContentLoaded', () => {
+      loadSellOffers();
+      setInterval(loadSellOffers, 30000);
+    });
+  </script>
+</body>
+</html>

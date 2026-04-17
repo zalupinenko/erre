@@ -1,15 +1,28 @@
-```
-# Dependencies
-node_modules/
+# Examples 1:
+(empty)
 
-# Environment variables
+# Example 2 (Project with artifacts):
+# Compiled and build artifacts
+*.pyc
+__pycache__/
+*.o
+*.obj
+dist/
+build/
+# Dependencies
+.venv/
+venv/
+node_modules/
+# Logs and temp files
+*.log
+*.tmp
+*.swp
+# Environment
 .env
 .env.local
 .env.*
-
-# Database file
-api/data/db.json
-
-# Package lock file
-api/package-lock.json
-```
+# Editors
+.vscode/
+.idea/
+# Original rules preserved
+*.log

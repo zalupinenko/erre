@@ -1,0 +1,61 @@
+{
+  "users": [
+    {
+      "id": "747628a0-9fba-4f76-a357-2f907f24ee43",
+      "telegramId": "admin",
+      "username": "admin",
+      "firstName": "Admin",
+      "role": "admin",
+      "balance": 1000000,
+      "createdAt": "2026-04-17T13:49:50.350Z",
+      "updatedAt": "2026-04-17T13:49:50.350Z"
+    },
+    {
+      "telegramId": "123456789",
+      "username": "testuser",
+      "firstName": "Test",
+      "lastName": "",
+      "balance": 0,
+      "role": "user",
+      "isActive": true,
+      "createdAt": "2026-04-17T13:50:21.608Z",
+      "updatedAt": "2026-04-17T13:50:21.608Z",
+      "id": "a804e312-a843-4a7e-b100-2e74e0a6a147"
+    }
+  ],
+  "wallets": [
+    {
+      "userId": "a804e312-a843-4a7e-b100-2e74e0a6a147",
+      "usdtBalance": 0,
+      "rubBalance": 0,
+      "walletAddress": null,
+      "createdAt": "2026-04-17T13:50:21.609Z",
+      "updatedAt": "2026-04-17T13:50:21.609Z",
+      "id": "123d0cb6-e221-41d4-b17c-7df16ea83ec2"
+    }
+  ],
+  "buyOffers": [],
+  "sellOffers": [],
+  "deals": [],
+  "withdrawRequests": [],
+  "topupRequests": [],
+  "authCodes": [
+    {
+      "telegramId": "123456789",
+      "code": "562498",
+      "expiresAt": "2026-04-17T13:55:19.073Z",
+      "used": true,
+      "username": "testuser",
+      "firstName": "Test",
+      "createdAt": "2026-04-17T13:50:19.073Z",
+      "updatedAt": "2026-04-17T13:50:21.608Z",
+      "id": "7545f03d-4985-48e5-9a13-fa4ba303af4b"
+    }
+  ],
+  "settings": {
+    "usdRubRate": 95,
+    "minWithdraw": 10,
+    "maxWithdraw": 10000,
+    "withdrawalFee": 1.5
+  }
+}

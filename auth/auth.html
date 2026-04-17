@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход | FranklinEx</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <style>
+        body {
+            background: #0f172a;
+            color: #e2e8f0;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .auth-container {
+            background: #1e293b;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #3b82f6;
+            margin-bottom: 1.5rem;
+            display: block;
+        }
+        .input-group {
+            margin-bottom: 1rem;
+            text-align: left;
+        }
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            color: #94a3b8;
+        }
+        input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #334155;
+            border-radius: 6px;
+            background: #0f172a;
+            color: #fff;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+        input:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+        button {
+            width: 100%;
+            padding: 0.75rem;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        button:hover {
+            background: #2563eb;
+        }
+        button:disabled {
+            background: #475569;
+            cursor: not-allowed;
+        }
+        .error-msg {
+            color: #ef4444;
+            font-size: 0.875rem;
+            margin-top: 1rem;
+            display: none;
+        }
+        .step-2 {
+            display: none;
+        }
+        .telegram-link {
+            margin-top: 1.5rem;
+            font-size: 0.875rem;
+            color: #94a3b8;
+        }
+        .telegram-link a {
+            color: #3b82f6;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="auth-container">
+    <div class="logo">FranklinEx</div>
+    
+    <!-- Шаг 1: Ввод телефона/юзернейма -->
+    <div id="step1">
+        <h2 style="margin-bottom: 1.5rem;">Вход в аккаунт</h2>
+        <div class="input-group">
+            <label for="identity">Telegram username или телефон</label>
+            <input type="text" id="identity" placeholder="@username или +7..." autocomplete="off">
+        </div>
+        <button id="sendCodeBtn">Получить код</button>
+        <div class="telegram-link">
+            Код будет отправлен в бота <a href="https://t.me/FranklinEx_bot" target="_blank">@FranklinEx_bot</a>
+        </div>
+    </div>
+
+    <!-- Шаг 2: Ввод кода -->
+    <div id="step2" class="step-2">
+        <h2 style="margin-bottom: 1.5rem;">Подтверждение</h2>
+        <p style="color: #94a3b8; margin-bottom: 1.5rem; font-size: 0.9rem;">
+            Введите код из сообщения в Telegram
+        </p>
+        <div class="input-group">
+            <label for="code">Код подтверждения</label>
+            <input type="text" id="code" placeholder="123456" maxlength="6" inputmode="numeric">
+        </div>
+        <button id="verifyCodeBtn">Войти</button>
+        <button onclick="location.reload()" style="background: transparent; margin-top: 0.5rem; font-size: 0.875rem; color: #94a3b8;">Назад</button>
+    </div>
+
+    <div id="errorMsg" class="error-msg"></div>
+</div>
+
+<script>
+    // Конфигурация API
+    const API_BASE = localStorage.getItem('worker_base') || 'http://localhost:3000';
+    
+    let currentIdentity = '';
+
+    const step1 = document.getElementById('step1');
+    const step2 = document.getElementById('step2');
+    const identityInput = document.getElementById('identity');
+    const codeInput = document.getElementById('code');
+    const sendCodeBtn = document.getElementById('sendCodeBtn');
+    const verifyCodeBtn = document.getElementById('verifyCodeBtn');
+    const errorMsg = document.getElementById('errorMsg');
+
+    function showError(msg) {
+        errorMsg.textContent = msg;
+        errorMsg.style.display = 'block';
+        setTimeout(() => {
+            errorMsg.style.display = 'none';
+        }, 5000);
+    }
+
+    // Отправка кода
+    sendCodeBtn.addEventListener('click', async () => {
+        const identity = identityInput.value.trim();
+        if (!identity) {
+            showError('Введите номер телефона или username');
+            return;
+        }
+
+        sendCodeBtn.disabled = true;
+        sendCodeBtn.textContent = 'Отправка...';
+        showError('');
+
+        try {
+            const response = await fetch(`${API_BASE}/api/public/auth/request_code`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ identity })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                currentIdentity = identity;
+                step1.style.display = 'none';
+                step2.style.display = 'block';
+                codeInput.focus();
+            } else {
+                showError(data.error || 'Ошибка отправки кода');
+                sendCodeBtn.disabled = false;
+                sendCodeBtn.textContent = 'Получить код';
+            }
+        } catch (err) {
+            showError('Ошибка соединения с сервером');
+            sendCodeBtn.disabled = false;
+            sendCodeBtn.textContent = 'Получить код';
+        }
+    });
+
+    // Проверка кода
+    verifyCodeBtn.addEventListener('click', async () => {
+        const code = codeInput.value.trim();
+        if (!code) {
+            showError('Введите код');
+            return;
+        }
+
+        verifyCodeBtn.disabled = true;
+        verifyCodeBtn.textContent = 'Проверка...';
+        showError('');
+
+        try {
+            const response = await fetch(`${API_BASE}/api/public/auth/verify_code`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ identity: currentIdentity, code })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                // Сохраняем токен
+                localStorage.setItem('FE_USER_TOKEN', data.token);
+                localStorage.setItem('FE_USER_ID', data.user.id);
+                
+                // Редирект на главную страницу кошелька
+                window.location.href = '../wallet/qr.html';
+            } else {
+                showError(data.error || 'Неверный код');
+                verifyCodeBtn.disabled = false;
+                verifyCodeBtn.textContent = 'Войти';
+            }
+        } catch (err) {
+            showError('Ошибка соединения с сервером');
+            verifyCodeBtn.disabled = false;
+            verifyCodeBtn.textContent = 'Войти';
+        }
+    });
+
+    // Поддержка Enter
+    identityInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') sendCodeBtn.click();
+    });
+    codeInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') verifyCodeBtn.click();
+    });
+</script>
+
+</body>
+</html>
